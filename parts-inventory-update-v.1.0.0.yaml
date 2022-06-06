@@ -1,0 +1,41 @@
+# Parts Inventory Update V.1.0.0
+#
+# Automated Inventory Update Test
+#
+
+# Account slugs:
+#  - quickbase[3pQVz9J]: API <None>
+---
+- META:
+    name: Parts Inventory Update V.1.0.0
+    description: Automated Inventory Update Test
+- TRIGGER quickbase[3pQVz9J] record on_update -> a:
+    export_fields: '"Model c" <490, 493, 220, 234>'
+    table: '"Cozzia: Work Orders" <bp2xen9ga>'
+    trigger_fields: '"Parts Sent" <109, 121, 122, 177, 73, 106, 108, 179>'
+    trigger_on_all_fields: 'false'
+    ___: ___
+    FILTERS:
+    - AND:
+      - last_modified_by.first_name contains Joe
+    - AND:
+      - last_modified_by.first_name contains Parts
+    - AND:
+      - last_modified_by.email contains joe@cozziausa.com
+    - AND:
+      - last_modified_by.last_name contains Chen
+- QUERY quickbase[3pQVz9J] record search -> b:
+    export_fields: '"Model" <8, 36, 38, 7>'
+    table: '"Cozzia: Parts Inventory" <brbqnb45v>'
+    ___: ___
+- b<>LOOP:
+  - DO:
+    - IF:
+      - AND:
+        - a<>inventory_parts_list contains {{b.identifier_text}}
+      - THEN:
+        - b<>ACTION quickbase record update -> c <=> b:
+            ___: ___
+            balance: '{{b.balance - a.inventory_parts_list.count(b.identifier_text)}}'
+      - ELSE: []
+...
