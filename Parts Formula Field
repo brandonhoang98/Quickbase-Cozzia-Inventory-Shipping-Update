@@ -1,0 +1,13 @@
+//Search for most recent parts info field by checking length starting from highest number trip
+var text textBox = If(
+Length([Parts Info - 4th trip]) > 0, [Parts Info - 4th trip],
+Length([Parts Info - 3rd trip]) > 0, [Parts Info - 3rd trip],
+Length([Parts Info - 2nd trip]) > 0, [Parts Info - 2nd trip],
+[Parts Info - 1st trip]
+);
+//Get the number of ships in a specific parts trip field, use ":" as delimiter, number of elements from a split will 
+//always be (# of trips + 1) assuming proper format when inputting
+var number index = Size(Split($textBox, ":"));
+
+var text shipText = Part($textBox,($index), ":"); //Get the most recent parts shipment info by accessing the last element which should always be variable index
+$shipText //return variable shipText which will be the outputted result
